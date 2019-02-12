@@ -1,17 +1,15 @@
-import train_utils
-import math
-import csv
-import keras
-import time
-import datetime
-import os
-import multiprocessing
+import train_app_utils as utils
 import argparse
 import logging
+import datetime
+import time
+import os
+import keras
+
 formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(message)s')
 
 def setup_logger(name, log_file=None, level=logging.INFO):
-    """Function setup as many loggers as you want"""
+    """Function to setup as many loggers as you want"""
 
     if log_file is not None:
         handler = logging.FileHandler(log_file)
@@ -43,9 +41,10 @@ def parse_args():
                     "in the character output",default=[0.2, 0.5, 0.8, 1.0])
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                     action="store_true")
-    args = parser.parse_args()
+    args = vars(parser.parse_args())
 
-    return args.epochs, args.sentences, args.generate, args.temperature, args.verbose
+    #Areturn args.epochs, args.sentences, args.generate, args.temperature, args.verbose
+    return args
 
 def main(epochs=60, sentences=None, generate=400, temperature=[0.2, 0.5, 0.8, 1.0], verbose=False):
     #Create log directory for job run
@@ -69,32 +68,28 @@ def main(epochs=60, sentences=None, generate=400, temperature=[0.2, 0.5, 0.8, 1.
 
     if sentences is not None:
         if sentences > my_data.len_sentences:
-            config_logger.error('Optional argument {} was set to {}. However this is outside of the range 0 - {}.'.format('Sentences', sentences, my_data.len_sentences))
+            config_logger.error('Optional argument {} was set to {}. However this is outside '\
+                    'of the range 0 - {}.'.format('Sentences', sentences, my_data.len_sentences))
             data_size = my_data.len_sentences
             config_logger.info('Optional argument {} was set to {}'.format('Sentences',sentences))
         else:
-            config_logger.info('Optional argument {} has been set. The value is: {}'.format('Sentences', sentences))
+            config_logger.info('Optional argument {} has been set. '\
+                    'The value is: {}'.format('Sentences', sentences))
             data_size = sentences
     else:
         data_size = my_data.len_sentences
 
-    temperature = [0.2, 0.5, 1.0, 1.2]
+#    temperature = [0.2, 0.5, 1.0, 1.2]
 
-    mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
-    mem_gib = mem_bytes/(1024.**3)
     config_logger.info('Number of Epochs: {}'.format(str(epochs)))
     console_logger.info('Number of Epochs: {}'.format(str(epochs)))
     config_logger.info('Data Size: {}'.format(str(data_size)))
     console_logger.info('Data Size: {}'.format(str(data_size)))
     config_logger.info('String Length to create: {}'.format(str(create_str_len)))
     console_logger.info('String Length to create: {}'.format(str(create_str_len)))
-    config_logger.info('CPU Count: {}'.format(str(round(multiprocessing.cpu_count() ,2))))
-    console_logger.info('CPU Count: {}'.format(str(round(multiprocessing.cpu_count() ,2))))
-    config_logger.info('Memory: {}'.format(str(round(mem_gib,2))))
-    console_logger.info('Memory: {}'.format(str(round(mem_gib,2))))
 
-    training_logger.info(['Job_Start_Time', 'Create_String_Len', 'Data_Size', 'Epoch_Num','Epoch_tm', 'Model_tm', \
-        'SeedGen_tm', 'temp0.2_tm','temp0.5_tm','temp1.0_tm', 'temp1.2_tm'])
+    training_logger.info(['Job_Start_Time', 'Create_String_Len', 'Data_Size', 'Epoch_Num',\
+        'Epoch_tm', 'Model_tm','SeedGen_tm', 'temp0.2_tm','temp0.5_tm','temp1.0_tm', 'temp1.2_tm'])
 
     #Setup the number of 'tests' to generate text
     gen_after_epoch_num = 5
@@ -129,4 +124,5 @@ def main(epochs=60, sentences=None, generate=400, temperature=[0.2, 0.5, 0.8, 1.
                 testing_logger.info('Generated Text: [Temp: {0}] {1}'.format(temp, generated_text))
                 console_logger.info('Generated Text: [Temp: {0}] {1}'.format(temp, generated_text))
 if __name__ == "__main__":
-    main(*parse_args())
+    #main(*parse_args())
+    print(parse_args())
