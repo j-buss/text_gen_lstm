@@ -24,29 +24,7 @@ def setup_logger(name, log_file=None, level=logging.INFO):
 
     return logger
 
-def parse_args():
-    """Parse Arguments for LSTM Model"""
-    parser = argparse.ArgumentParser(description=\
-            'This is a program to create an LSTM text generator based on a corpus of Fredriche '\
-            'Nietzsche writtings.')
-    #Define command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-e","--epochs", help="number of epochs to train",
-                    default=60, type=int)
-    parser.add_argument("-s", "--sentences", help="number of sentences to train; default will use all",
-                    type=int)
-    parser.add_argument("-g", "--generate", help="length of text to generate",
-                    default=400, type=int)
-    parser.add_argument("-t", "--temperature", help="temperature is a description of variability "\
-                    "in the character output",default=[0.2, 0.5, 0.8, 1.0])
-    parser.add_argument("-v", "--verbose", help="increase output verbosity",
-                    action="store_true")
-    args = vars(parser.parse_args())
-
-    #Areturn args.epochs, args.sentences, args.generate, args.temperature, args.verbose
-    return args
-
-def main(epochs=60, sentences=None, generate=400, temperature=[0.2, 0.5, 0.8, 1.0], verbose=False):
+def main(epochs, sentences, generate, temperature, verbose=False):
     #Create log directory for job run
     job_start_time = time.strftime("%Y%m%d_%H%M%S")
     data_directory = "output_data_" + job_start_time
@@ -123,6 +101,20 @@ def main(epochs=60, sentences=None, generate=400, temperature=[0.2, 0.5, 0.8, 1.
                         my_data.char_indices, seed_text, temp, create_str_len)
                 testing_logger.info('Generated Text: [Temp: {0}] {1}'.format(temp, generated_text))
                 console_logger.info('Generated Text: [Temp: {0}] {1}'.format(temp, generated_text))
+
 if __name__ == "__main__":
-    #main(*parse_args())
-    print(parse_args())
+    parser = argparse.ArgumentParser(description=\
+            'Create a text generator based on the corpus of Fredriche Nietzsche writings')
+
+    #Define command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-e","--epochs", help="number of epochs to train",default=60, type=int)
+    parser.add_argument("-s", "--sentences", help="number of sentences to train; default is all", type=int)
+    parser.add_argument("-g", "--generate", help="length of text to generate",default=400, type=int)
+    parser.add_argument("-t", "--temperature", help="temperature is a measure of the output variability ",\
+                    default=[0.2, 0.5, 0.8, 1.0])
+    parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
+    
+    args = parser.parse_args()
+    
+    main(args.epochs, args.sentences, args.generate, args.temperature)
