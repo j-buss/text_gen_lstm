@@ -1,7 +1,7 @@
 #!/bin/bash
 sudo apt-get update
-sudo apt-get --yes --force-yes install git
-sudo apt-get --yes --force-yes install python3-pip
+sudo apt-get --yes --assume-yes install git
+sudo apt-get --yes --assume-yes install python3-pip
 	
 git clone https://github.com/j-buss/text_gen_lstm.git
 cd text_gen_lstm/train/app
